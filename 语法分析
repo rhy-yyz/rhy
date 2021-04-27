@@ -1,0 +1,403 @@
+#include <stdio.h> 
+
+#include <string.h>
+
+void scaner();
+
+void sentence();
+
+void statement();
+
+void expression();
+
+void term();
+
+void factor();
+
+char *key[6]={"begin","if","then","while","do","end"},ch[100];
+
+int p=0,kk=0,q,syn;
+
+int main()
+
+{
+
+printf("输入：\n");
+
+gets(ch);
+
+sentence();
+
+return 0;
+
+}
+
+void scaner()
+
+{
+
+char token[100] = {};
+
+q = 0;
+
+while(ch[p] == ' ') p++;
+
+if((ch[p] >= 'a'&&ch[p] <= 'z')||(ch[p] >= 'A'&&ch[p] <= 'Z'))
+
+{
+
+token[q++] = ch[p];
+
+p++;
+
+while((ch[p] >= '0'&&ch[p] <= '9')||(ch[p] >= 'a'&&ch[p] <= 'z')
+
+||(ch[p] >= 'A'&&ch[p] <= 'Z')) token[q++] = ch[p++];
+
+syn = 10;
+
+token[q] = '\0';
+
+for(int n = 0; n < 6; n++)
+
+if(strcmp(token, key[n]) == 0)
+
+{
+
+syn = n + 1;
+
+break;
+
+}
+
+}
+
+else if(ch[p] >= '0'&&ch[p] <= '9')
+
+{
+
+token[q++] = ch[p];
+
+p++;
+
+while(ch[p] >= '0'&&ch[p] <= '9') token[q++] = ch[p++];
+
+syn = 11;
+
+}
+
+else switch(ch[p])
+
+{
+
+case '<':token[q++] = ch[p++];
+
+if(ch[p] == '>')
+
+{
+
+syn = 21;
+
+token[q++] = ch[p++];
+
+}
+
+else if(ch[p] == '=')
+
+{
+
+syn = 22;
+
+token[q++] = ch[p++];
+
+}
+
+else syn = 23;
+
+break;
+
+case '>':token[q++] = ch[p++];
+
+if(ch[p] == '>')
+
+{
+
+syn = 24;
+
+token[q++] = ch[p++];
+
+}
+
+else syn = 20;
+
+break;
+
+case ':':token[q++] = ch[p++];
+
+if(ch[p] == '=')
+
+{
+
+syn = 18;
+
+token[q++] = ch[p++];
+
+}
+
+else syn = 17;
+
+break;
+
+case '*':syn = 13;
+
+token[q++] = ch[p++];
+
+break;
+
+case '/':syn = 14;
+
+token[q++] = ch[p++];
+
+break;
+
+case '+':syn = 15;
+
+token[q++] = ch[p++];
+
+break;
+
+case '-':syn = 16;
+
+token[q] = ch[p];
+
+break;
+
+case '=':syn = 25;
+
+token[q++] = ch[p++];
+
+break;
+
+case ';':syn = 26;
+
+token[q++] = ch[p++];
+
+break;
+
+case '(':syn = 27;
+
+token[q++] = ch[p++];
+
+break;
+
+case ')':syn = 28;
+
+token[q++] = ch[p++];
+
+break;
+
+case '#':syn = 0;
+
+token[q++] = ch[p++];
+
+break;
+
+case '\n':syn = -2;
+
+break;
+
+default:syn = -1;
+
+break;
+
+}
+
+}
+
+void sentence()
+
+{
+
+scaner();
+
+if(syn == 1)
+
+{
+
+statement();
+
+while(syn == 26) statement();
+
+if(syn == 6)
+
+{
+
+scaner();
+
+if(syn == 0) printf("成功！\n");
+
+else printf("错误！“end”后出错。\n");
+
+}
+
+else
+
+{
+
+printf("错误！缺少“end”。\n");
+
+kk = 1;
+
+}
+
+}
+
+else
+
+{
+
+printf("错误！缺少“begin”。\n");
+
+kk = 1;
+
+}
+
+}
+
+void statement()
+
+{
+
+scaner();
+
+if(syn == 10)
+
+{
+
+scaner();
+
+if(syn == 18)
+
+{
+
+scaner();
+
+expression();
+
+}
+
+else
+
+{
+
+printf("错误！“:=”出错。\n");
+
+kk=1;
+
+}
+
+}
+
+else
+
+{
+
+printf("错误！句子出错。\n");
+
+kk=1;
+
+}
+
+return;
+
+}
+
+void expression()
+
+{
+
+term();
+
+while((syn == 13)||(syn == 14))
+
+{
+
+scaner();
+
+term();
+
+}
+
+return;
+
+}
+
+void term()
+
+{
+
+factor();
+
+while((syn == 15)||(syn == 16))
+
+{
+
+scaner();
+
+factor();
+
+}
+
+return;
+
+}
+
+void factor()
+
+{
+
+if((syn == 10)||(syn == 11)) scaner();
+
+else if(syn == 27)
+
+{
+
+scaner();
+
+expression();
+
+if(syn == 28) scaner();
+
+else
+
+{
+
+printf("错误！“(”出错。\n");
+
+kk=1;
+
+}
+
+}
+
+else
+
+{
+
+printf("错误！\n");
+
+kk=1;
+
+} 
+
+return;
+
+}
+
+//begin a:=9;x:=2*3;b:=a+x end#
+
+//begin x:=a+b*c end
+
+//begin x:=a+b*c
+
+//x:=a+b*c end#
